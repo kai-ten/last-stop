@@ -16,21 +16,21 @@ The GPT-3 Chat Completion Prompt Service is a lambda that handles the request fr
     docker build . -t prompt-svc
     ```
 
-1. Run the docker container locally using one of the following methods:
-    - With Circulate's ArangoDB running and configured:
-        ```
-        docker run -p 8080:8080 prompt-svc /main
-        ```
-    - Print to console (quickest way to test):
-        ```
-        docker run \
-            -e OPENAPI_KEY='add_your_key' \
-            -p 8080:8080 prompt-svc /main
-        ```
+1. Run the docker container as described below, be sure to pass in your OpenAPI API Key (from platform.openapi.com):
+    ```
+    docker run \
+        -e OPENAPI_KEY='your_key_here' \
+        -p 8080:8080 prompt-svc /main
+    ```
+
+1. Execute the curl command to test the lambda and 
+    ```
+    curl -XPOST -H "Content-Type: application/json" "http://localhost:8080/2015-03-31/functions/function/invocations" -d @./assets/request.json
+    ```
 
 <br />
 
-## Current Targets:
+## Planned Targets for further analysis:
 
 - Circulate Database (TODO)
     ```
