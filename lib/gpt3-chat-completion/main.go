@@ -4,12 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	openai "github.com/sashabaranov/go-openai"
 )
+
+var headers = map[string]string{
+	"Access-Control-Allow-Origin": "*",
+	"Content-Type":                "application/json",
+}
 
 var client = openai.NewClient(os.Getenv("OPENAPI_KEY"))
 
@@ -19,13 +25,11 @@ type Conversation struct {
 }
 
 func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	message := request.Body
-	fmt.Printf("Parsed: %v", message)
-
 	var conversation []Conversation
-	err := json.Unmarshal([]byte(message), &conversation)
+	err := json.Unmarshal([]byte(request.Body), &conversation)
 	if err != nil {
-		return events.APIGatewayProxyResponse{StatusCode: 400, Body: "No conversations were submitted"}, nil
+		log.Printf("Failed to marshal: %v", err)
+		return events.APIGatewayProxyResponse{Headers: headers, StatusCode: 400, Body: "No conversations were submitted"}, nil
 	}
 
 	var chatCompletion []openai.ChatCompletionMessage
@@ -55,10 +59,11 @@ func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 
 	if err != nil {
 		fmt.Printf("ChatCompletion error: %v\n", err)
-		return events.APIGatewayProxyResponse{StatusCode: 500, Body: "Invalid Message"}, nil
+		return events.APIGatewayProxyResponse{Headers: headers, StatusCode: 500, Body: "Invalid Message"}, nil
 	}
 
 	return events.APIGatewayProxyResponse{
+		Headers:    headers,
 		StatusCode: 200,
 		Body:       resp.Choices[0].Message.Content,
 	}, nil

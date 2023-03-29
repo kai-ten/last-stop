@@ -8,10 +8,19 @@ __The best part? This is capable of running entirely on your own network!__
 
 <br />
 
+![Example image of LLM functionality](assets/example.png)
+
+<br />
+
 Make the most of these LLMs by leveraging them all in one application all while staying safe from DLP. After all, it is estimated that [11% of data that employees paste in ChatGPT contains sensitive data](https://www.csoonline.com/article/3691115/sharing-sensitive-business-data-with-chatgpt-could-be-risky.html).
 
 Have more questions? Reach out to us in some of the following places:
 - [Circulate - Contact Us](https://www.circulate.dev/contact)
 - [Kai Herrera](https://www.linkedin.com/in/kai-herrera/)
 - [Dustin Buschman](https://www.linkedin.com/in/dbuschman/)
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 3a70836 (basic display of conversations, communicating with go lambda)
 
