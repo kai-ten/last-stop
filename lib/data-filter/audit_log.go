@@ -10,12 +10,12 @@ import (
 	"github.com/google/uuid"
 )
 
-func storeConversationAuditLog(conversation Conversation) (string, error) {
+func storeConversationAuditLog(conversation Conversation) (Conversation, error) {
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("us-east-2"),
 	})
 	if err != nil {
-		return "", err
+		return Conversation{}, err
 	}
 
 	svc := dynamodb.New(sess)
@@ -24,17 +24,17 @@ func storeConversationAuditLog(conversation Conversation) (string, error) {
 
 	av, err := dynamodbattribute.MarshalMap(conversation)
 	if err != nil {
-		return "", err
+		return Conversation{}, err
 	}
 
 	input := &dynamodb.PutItemInput{
 		Item:      av,
-		TableName: aws.String("AuditLog"),
+		TableName: aws.String("LastStopAuditLog"),
 	}
 
 	_, err = svc.PutItem(input)
 	if err != nil {
-		return "", err
+		return Conversation{}, err
 	}
-	return conversation.ID, nil
+	return conversation, nil
 }

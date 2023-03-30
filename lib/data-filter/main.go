@@ -24,11 +24,12 @@ func HandleRequest(request events.APIGatewayProxyRequest) ([]Conversation, error
 		return nil, err
 	}
 
-	id, err := storeConversationAuditLog(conversation[len(conversation)-1])
+	msgIndex := len(conversation) - 1
+	conversation[msgIndex], err = storeConversationAuditLog(conversation[msgIndex])
 	if err != nil {
 		log.Fatalf("Error storing conversation: %s", err)
 	} else {
-		fmt.Printf("Stored conversation with ID: %s\n", id)
+		fmt.Printf("Stored conversation with ID: %s\n", conversation[msgIndex].ID)
 	}
 
 	return conversation, nil

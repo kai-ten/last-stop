@@ -30,14 +30,14 @@ func TestStoreConversationAuditLog(t *testing.T) {
 
 	t.Run("Successful store", func(t *testing.T) {
 		mockSvc := &mockDynamoDBClient{}
-		id, err := storeConversationWithClient(conv, mockSvc)
+		lastMessage, err := storeConversationWithClient(conv, mockSvc)
 		if err != nil {
 			t.Errorf("Expected no error, got %v", err)
 		}
-		if id == "" {
+		if lastMessage == (Conversation{}) {
 			t.Error("Expected a valid ID, got an empty string")
 		}
-		if id == "test-uuid" {
+		if lastMessage.ID == "test-uuid" {
 			t.Log("Success - ID matches")
 		}
 	})
@@ -51,13 +51,13 @@ func TestStoreConversationAuditLog(t *testing.T) {
 	})
 }
 
-func storeConversationWithClient(conversation Conversation, svc dynamodbiface.DynamoDBAPI) (string, error) {
-	conversation.Timestamp = 1 // Use a fixed timestamp for testing
+func storeConversationWithClient(conversation Conversation, svc dynamodbiface.DynamoDBAPI) (Conversation, error) {
+	conversation.Timestamp = 1
 	conversation.ID = "test-uuid"
 
 	av, err := dynamodbattribute.MarshalMap(conversation)
 	if err != nil {
-		return "", err
+		return Conversation{}, err
 	}
 
 	input := &dynamodb.PutItemInput{
@@ -67,7 +67,7 @@ func storeConversationWithClient(conversation Conversation, svc dynamodbiface.Dy
 
 	_, err = svc.PutItem(input)
 	if err != nil {
-		return "", err
+		return Conversation{}, err
 	}
-	return conversation.ID, nil
+	return conversation, nil
 }
