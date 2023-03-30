@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -20,18 +18,13 @@ var headers = map[string]string{
 var client = openai.NewClient(os.Getenv("OPENAPI_KEY"))
 
 type Conversation struct {
+	ID          string `json:"id"`
 	Participant string `json:"participant"`
 	Message     string `json:"message"`
+	Timestamp   int32  `json:"timestamp"`
 }
 
-func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	var conversation []Conversation
-	err := json.Unmarshal([]byte(request.Body), &conversation)
-	if err != nil {
-		log.Printf("Failed to marshal: %v", err)
-		return events.APIGatewayProxyResponse{Headers: headers, StatusCode: 400, Body: "No conversations were submitted"}, nil
-	}
-
+func HandleRequest(conversation []Conversation) (events.APIGatewayProxyResponse, error) {
 	var chatCompletion []openai.ChatCompletionMessage
 	for _, c := range conversation {
 
