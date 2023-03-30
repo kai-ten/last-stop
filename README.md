@@ -4,7 +4,7 @@ Last Stop is the final place your prompt resides before sending your data to the
 
 <br />
 
-__The best part? This is capable of running entirely on your own network!__
+__The best part? This is intended to run entirely on your own network!__
 
 <br />
 
