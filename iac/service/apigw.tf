@@ -43,20 +43,20 @@ resource "aws_iam_role_policy" "apigw_policy" {
   })
 }
 
+resource "aws_security_group" "apigw_sg" {
+  name        = "${var.name}-vpce-sg"
+  description = "Security group for Last Stop REST API VPC Endpoint"
+#   vpc_id      = var.create_vpc == true ? module.vpc
+}
+
 resource "aws_vpc_endpoint" "apigw_endpoint" {
   vpc_id            = aws_vpc.main.id # import or create VPC to deploy endpoint to
   service_name      = "com.amazonaws.${var.region}.execute-api"
   vpc_endpoint_type = "Interface"
 
-  security_group_ids = [aws_security_group.apigw.id]
+  security_group_ids = [aws_security_group.apigw_sg.id]
 
   subnet_ids = aws_subnet.private.*.id # import or create subnets to deploy endpoint to
-}
-
-resource "aws_security_group" "apigw" {
-  name        = "${var.name}-vpce-sg"
-  description = "Security group for Last Stop REST API VPC Endpoint"
-  vpc_id      = aws_vpc.example.id # Reference existing VPC
 }
 
 resource "aws_api_gateway_rest_api" "api" {
@@ -104,16 +104,6 @@ resource "aws_api_gateway_deployment" "v1_deployment" {
 #   target_arns = [aws_network_load_balancer.example.arn]
 #   description = "Example VPC link for private REST API"
 # }
-
-resource "aws_cloudwatch_log_group" "api_logs" {
-  name = "${var.name}-api-logs"
-
-  tags = {
-    Environment = "${var.env}"
-    Application = "${var.name}"
-  }
-}
-
 
 resource "aws_api_gateway_stage" "example" {
   stage_name    = "v1"

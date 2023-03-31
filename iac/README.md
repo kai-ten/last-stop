@@ -21,7 +21,10 @@ Use terraform workspaces, if you don't create a new workspace it will deploy to 
     make init
     ```
 
-    This will create a remote backend in the environment you are signed into in your CLI. This will also deploy a project using the "default" Terraform Workspace. Feel free to change this workspace depending on how you manage your AWS environments
+    This will:
+    - Create a remote backend in the environment you are signed into in your CLI
+    - Deploy a project using the "default" Terraform Workspace. Feel free to change this workspace depending on how you manage your AWS environments
+    - Create a new VPC (see terraform.tfvars to use an existing VPC)
 
 1. Go to Secrets Manager, select "/last-stop-default/openapi/api_key", and store your OpenAPI API Key
 

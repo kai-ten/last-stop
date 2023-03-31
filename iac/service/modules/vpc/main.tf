@@ -20,31 +20,3 @@ module "vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
 }
-
-module "integration_security_group" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 4.0"
-
-  name   = "${var.name}-${terraform.workspace}-sg-id"
-  vpc_id = module.vpc.vpc_id
-
-  ingress_with_cidr_blocks = [
-    {
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      description = "SSL Traffic"
-      cidr_blocks = module.vpc.vpc_cidr_block
-    }
-  ]
-
-  egress_with_cidr_blocks = [
-    {
-      from_port   = 443
-      to_port     = 443
-      protocol    = "tcp"
-      description = "SSL Traffic"
-      cidr_blocks = "0.0.0.0/0"
-    }
-  ]
-}
