@@ -1,4 +1,4 @@
-module laststop
+module last-stop-audit
 
 go 1.19
 
