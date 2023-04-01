@@ -7,11 +7,15 @@ variable "create_vpc" {
   type = bool
 }
 
-variable "vpc_config" {
+variable "vpc" {
   description = "optional vpc of your lambda"
   type = object({
-    subnet_ids         = list(string)
+    id = string
+    cidr = string
+    public_subnet_ids  = list(string)
+    private_subnet_ids = list(string)
     security_group_ids = list(string)
+    public_route_table_ids = list(string)
   })
   default = null
 }

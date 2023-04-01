@@ -1,5 +1,13 @@
+resource "random_string" "random" {
+  length = 8
+  lower = true
+  special = false
+  numeric = false
+  upper = false
+}
+
 resource "aws_s3_bucket" "state_bucket" {
-  bucket              = "${var.name}-terraform-state-backend"
+  bucket              = "${var.name}-terraform-state-backend-${random_string.random.result}"
   object_lock_enabled = true
   tags = {
     Name = "Last Stop S3 Remote Terraform State Store"

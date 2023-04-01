@@ -1,49 +1,36 @@
 variable "name" {
-  description = "Name of your environment"
+  description = "Name of the project"
   type        = string
 }
 
-variable "lambda_name" {
-  description = "Name of your lambda"
+variable "region" {
+  description = "Region of your deployment"
   type        = string
 }
 
-variable "env_variables" {
-  description = "Environments variables for your lambda"
-  type        = map(string)
-  default = null
-}
-
-variable "iam_policy_json" {
-  description = "IAM policy of your lambda"
+variable "account_id" {
+  description = "AWS Account ID"
   type        = string
 }
 
-variable "src_path" {
-  description = "Path to your lambda sources"
-  type        = string
+variable "audit_log_lambda_arn" {
+  description = "The ARN value of the audit log service."
+  type = string
 }
 
-variable "timeout" {
-  description = "Execution timeout of your lambda"
-  default     = 60
-  type        = number
+variable "gpt3cc_lambda_arn" {
+  description = "The ARN value of the GPT-3 Chat Completion service."
+  type = string
 }
 
 variable "vpc_config" {
   description = "optional vpc of your lambda"
   type = object({
-    subnet_ids         = list(string)
+    vpc_id = string
+    vpc_cidr = string
+    public_subnet_ids = list(string)
     security_group_ids = list(string)
-  })
-  default = null
-}
-
-variable "efs_config" {
-  description = "optional efs mount to your lambda"
-  type = object({
-    arn         = string
-    mount_path = string
+    public_route_table_ids = list(string)
   })
   default = null
 }

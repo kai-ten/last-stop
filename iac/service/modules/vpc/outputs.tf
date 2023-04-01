@@ -1,19 +1,19 @@
-output "vpc_id" {
+output "id" {
   value = module.vpc.vpc_id
 }
 
-output "vpc_public_subnets" {
+output "cidr" {
+  value = module.vpc.vpc_cidr_block
+}
+
+output "public_subnet_ids" {
   value = module.vpc.public_subnets
 }
 
-output "vpc_private_subnets" {
+output "private_subnet_ids" {
   value = module.vpc.private_subnets
 }
 
-output "vpc_private_subnet_cidrs" {
-  value = module.vpc.private_subnets_cidr_blocks
-}
-
-output "integration_security_group_id" {
-  value = module.integration_security_group.security_group_id
+output "public_route_table_ids" {
+  value = module.vpc.public_route_table_ids
 }

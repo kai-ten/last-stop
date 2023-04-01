@@ -8,11 +8,11 @@ resource "aws_lambda_function" "go_function" {
     null_resource.gobuild,
   ]
   
-  filename      = "${var.src_path}/assets/${random_uuid.lambda_src_hash.result}.zip"
+  filename      = "${var.src_path}/dist/${random_uuid.lambda_src_hash.result}.zip"
   function_name = var.lambda_name
   role          = aws_iam_role.lambda.arn
   runtime       = "go1.x"
-  handler       = "assets/main"
+  handler       = "dist/main"
   timeout       = var.timeout
   publish = true
 

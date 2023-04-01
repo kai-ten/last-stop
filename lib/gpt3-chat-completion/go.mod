@@ -1,4 +1,4 @@
-module gpt3-cc
+module main
 
 go 1.19
 

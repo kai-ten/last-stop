@@ -13,7 +13,7 @@ type Conversation struct {
 	ID          string `json:"id"`
 	Participant string `json:"participant"`
 	Message     string `json:"message"`
-	Timestamp   int32  `json:"timestamp"`
+	Timestamp   int64  `json:"timestamp"`
 }
 
 func HandleRequest(request events.APIGatewayProxyRequest) ([]Conversation, error) {
