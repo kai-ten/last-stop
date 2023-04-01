@@ -1,5 +1,3 @@
-## Must implement WAF if edge is desired
-
 resource "aws_cloudwatch_log_group" "apigw_logs" {
   name = "/${var.name}/api-gw/${terraform.workspace}"
 }
