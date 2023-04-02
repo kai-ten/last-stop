@@ -25,6 +25,8 @@ module "last_stop" {
   name   = var.name
   region = data.aws_region.current.name
   account_id = data.aws_caller_identity.current.account_id
+  allowlistRangeIPv4 = var.allowlistRangeIPv4
+  allowlistRangeIPv6 = var.allowlistRangeIPv6
 
   audit_log_lambda_arn = module.audit_log_svc.arn
   gpt3cc_lambda_arn    = module.gpt3_cc_svc.arn

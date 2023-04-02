@@ -31,7 +31,7 @@ resource "aws_cloudfront_distribution" "last_stop_distribution" {
 
     forwarded_values {
       query_string = false
-      headers      = ["Origin"]
+      headers      = ["Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"]
 
       cookies {
         forward = "none"

@@ -19,3 +19,7 @@ Have more questions? Reach out to us in some of the following places:
 - [Kai Herrera](https://www.linkedin.com/in/kai-herrera/)
 - [Dustin Buschman](https://www.linkedin.com/in/dbuschman/)
 
+
+## How to deploy
+
+1. Coming soon

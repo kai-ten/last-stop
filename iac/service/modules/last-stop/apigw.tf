@@ -128,10 +128,17 @@ resource "aws_api_gateway_integration" "last_stop_apigw_int" {
 
   request_templates = {
     "application/json" = <<EOF
-      "input": "$util.escapeJavaScript($input.json('$'))"
-      "stateMachineArn": "${module.step_function.state_machine_arn}"
+  {
+    "input": "$util.escapeJavaScript($input.json('$'))",
+    "stateMachineArn": "${module.step_function.state_machine_arn}"
+  }
     EOF
   }
+
+  # {
+  #   "input": "$util.escapeJavaScript($input.json('$'))",
+  #   "stateMachineArn": "$util.escapeJavaScript($stageVariables.get(arn:aws:states:us-east-1:123456789012:stateMachine:HelloWorld))"
+  # }
 }
 
 resource "aws_api_gateway_deployment" "last_stop_deployment" {
@@ -162,4 +169,60 @@ resource "aws_api_gateway_stage" "last_stop_stage" {
       "responseLength":"$context.responseLength"
     })
   }
+}
+
+resource "aws_api_gateway_method" "last_stop_options_method" {
+  rest_api_id = aws_api_gateway_rest_api.last_stop_api.id
+  resource_id = aws_api_gateway_resource.last_stop_apigw_resource.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_method_response" "last_stop_options_response_200" {
+  rest_api_id = aws_api_gateway_rest_api.last_stop_api.id
+  resource_id = aws_api_gateway_resource.last_stop_apigw_resource.id
+  http_method = aws_api_gateway_method.last_stop_options_method.http_method
+  status_code = 200
+
+  /**
+   * This is where the configuration for CORS enabling starts.
+   * We need to enable those response parameters and in the 
+   * integration response we will map those to actual values
+   */
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers"     = true,
+    "method.response.header.Access-Control-Allow-Methods"     = true,
+    "method.response.header.Access-Control-Allow-Origin"      = true,
+    "method.response.header.Access-Control-Allow-Credentials" = true
+  }
+
+  depends_on = [aws_api_gateway_method.last_stop_options_method]
+}
+
+resource "aws_api_gateway_integration" "last_stop_options_integration" {
+    rest_api_id   = aws_api_gateway_rest_api.last_stop_api.id
+    resource_id   = aws_api_gateway_resource.last_stop_apigw_resource.id
+    http_method   = aws_api_gateway_method.last_stop_options_method.http_method
+    type          = "MOCK"
+    request_templates = {
+    "application/json" = jsonencode(
+      {
+        statusCode = 200
+      }
+    )
+  }
+    depends_on = [aws_api_gateway_method.last_stop_options_method]
+}
+
+resource "aws_api_gateway_integration_response" "last_stop_options_integration_response" {
+    rest_api_id   = aws_api_gateway_rest_api.last_stop_api.id
+    resource_id   = aws_api_gateway_resource.last_stop_apigw_resource.id
+    http_method   = aws_api_gateway_method.last_stop_options_method.http_method
+    status_code   = aws_api_gateway_method_response.last_stop_options_response_200.status_code
+    response_parameters = {
+        "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT'",
+        "method.response.header.Access-Control-Allow-Origin" = "'*'"
+    }
+    depends_on = [aws_api_gateway_method_response.last_stop_options_response_200]
 }

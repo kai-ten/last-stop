@@ -11,3 +11,7 @@ create_vpc = true
 # private_subnet_ids = []
 # default_sg_id = ""
 # }
+
+# These allowlists enable access to the website. 
+allowlistRangeIPv4 = ["10.0.0.0/16"]
+allowlistRangeIPv6 = ["2001:db8:3333:4444:5555:6666:7777:8888/128"]

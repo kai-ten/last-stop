@@ -8,69 +8,17 @@ interface Message {
 function Chat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const API_ENDPOINT = "http://localhost:8080/2015-03-31/functions/function/invocations"
+  const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8080/2015-03-31/functions/function/invocations";
 
   const sendMessage = (message: Message) => {
-    console.log(message)
+    console.log(API_ENDPOINT)
     const response = fetch(API_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       mode: "cors",
-      body: JSON.stringify({
-        "resource": "/",
-        "path": "/",
-        "httpMethod": "GET",
-        "requestContext": {
-          "accountId": "123456789012",
-          "apiId": "id",
-          "authorizer": {
-            "claims": null,
-            "scopes": null
-          },
-          "domainName": "id.execute-api.us-east-1.amazonaws.com",
-          "domainPrefix": "id",
-          "extendedRequestId": "request-id",
-          "httpMethod": "GET",
-          "identity": {
-            "accessKey": null,
-            "accountId": null,
-            "caller": null,
-            "cognitoAuthenticationProvider": null,
-            "cognitoAuthenticationType": null,
-            "cognitoIdentityId": null,
-            "cognitoIdentityPoolId": null,
-            "principalOrgId": null,
-            "sourceIp": "IP",
-            "user": null,
-            "userAgent": "user-agent",
-            "userArn": null,
-            "clientCert": {
-              "clientCertPem": "CERT_CONTENT",
-              "subjectDN": "www.example.com",
-              "issuerDN": "Example issuer",
-              "serialNumber": "a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1:a1",
-              "validity": {
-                "notBefore": "May 28 12:30:02 2019 GMT",
-                "notAfter": "Aug  5 09:36:04 2021 GMT"
-              }
-            }
-          },
-          "path": "/",
-          "protocol": "HTTP/1.1",
-          "requestId": "id=",
-          "requestTime": "04/Mar/2020:19:15:17 +0000",
-          "requestTimeEpoch": 1583349317135,
-          "resourceId": null,
-          "resourcePath": "/",
-          "stage": "$default"
-        },
-        "pathParameters": null,
-        "stageVariables": null,
-        "body": JSON.stringify(messages),
-        "isBase64Encoded": false
-      })
+      body: JSON.stringify(messages)
     })
     .then(response => {
       response.json().then(data => {
@@ -128,7 +76,7 @@ function Chat() {
       </div>
       <form
         onSubmit={handleSubmit}
-        className="flex items-center justify-center p-4 bg-gray-200"
+        className="flex items-center justify-center p-4 bg-gray-200 border-3"
       >
         <textarea
           value={input}

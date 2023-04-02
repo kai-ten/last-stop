@@ -61,11 +61,13 @@ module "step_function" {
   name       = var.name
   definition = local.definition_template
 
+  create_role = true
+
   service_integrations = {
     lambda = {
       lambda = [
-        "${var.gpt3cc_lambda_arn}",
-        "${var.audit_log_lambda_arn}"
+        "${var.gpt3cc_lambda_arn}:*",
+        "${var.audit_log_lambda_arn}:*"
       ]
     }
 

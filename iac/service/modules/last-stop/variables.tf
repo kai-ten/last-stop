@@ -13,6 +13,14 @@ variable "account_id" {
   type        = string
 }
 
+variable "allowlistRangeIPv4" {
+  type = list(string)
+}
+
+variable "allowlistRangeIPv6" {
+  type = list(string)
+}
+
 variable "audit_log_lambda_arn" {
   description = "The ARN value of the audit log service."
   type = string

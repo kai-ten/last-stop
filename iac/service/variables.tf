@@ -7,6 +7,14 @@ variable "create_vpc" {
   type = bool
 }
 
+variable "allowlistRangeIPv4" {
+  type = list(string)
+}
+
+variable "allowlistRangeIPv6" {
+  type = list(string)
+}
+
 variable "vpc" {
   description = "optional vpc of your lambda"
   type = object({
