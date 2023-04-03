@@ -1,6 +1,6 @@
 # Last Stop 
 
-Last Stop is the final place your prompt resides before sending your data to the black box. Last Stop is a DLP solution that to mitigate data loss before prompts get sent to Large Language Models (LLMs) like OpenAI's ChatGPT, Google's Bard (coming soon), and more. Last Stop also allows you gain insights into the use-cases that your organization is sending to LLMs, so that you can increase the experiences of using these tools as an organization. 
+Last Stop is the final place your prompt resides before sending your data to the black box. Last Stop is a DLP solution that mitigates data loss before prompts get sent to Large Language Models (LLMs) like OpenAI's ChatGPT, Google's Bard (coming soon), and more. Last Stop also allows you gain insights into the use-cases that your organization is sending to LLMs, so that you can increase the experiences of using these tools as an organization. 
 
 With each prompt, the data being monitored is checked for code, PII, sensitive organization data, and whatever else you'd like to define as a flag or key metric. Any findings in the data can result in blocking the message, can result in sanitizing the data prior to being submitted, or can result in being stored to a Vector database to build a company corpus. Once the data has been validated and cleaned (if necessary), the request will be forwarded to the LLM.
 
