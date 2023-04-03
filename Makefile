@@ -30,3 +30,11 @@ plan:
 apply:
 	cd iac/service && \
 	terraform apply -auto-approve
+
+###############
+# Destroy App #
+###############
+
+destroy:
+	cd iac/service && \
+	terraform destroy -auto-approve

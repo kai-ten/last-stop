@@ -1,12 +1,7 @@
-import React from 'react';
-import logo from './logo.svg';
 import Navbar from './components/Navbar';
 import Chat from './components/Chat';
 
 function App() {
-
-  const conversationContext = React.createContext([])
-
   return (
     <div className="h-screen flex bg-primary">
       <div className="basis-1/6">
