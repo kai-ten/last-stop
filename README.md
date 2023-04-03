@@ -28,7 +28,7 @@ Have more questions? Reach out to us in some of the following places:
 1. In order to deploy for the first time you must have the following dependencies:
     - [An API Key for ChatGPT](https://platform.openai.com/overview) (yes, having this is better than employees signing in on their behalf)
         - If you want us to retrieve and manage the API Key on your behalf, let us know! 
-    - Docker ([Rancher(https://rancherdesktop.io/)] or [Docker Desktop](https://docs.docker.com/desktop/))
+    - Docker ([Rancher](https://rancherdesktop.io/) or [Docker Desktop](https://docs.docker.com/desktop/))
     - [aws-cli](https://aws.amazon.com/cli/)
     - [Golang 1.20](https://go.dev/doc/install)
     - [Node v18.x](https://nodejs.org/en)
