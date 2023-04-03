@@ -3,19 +3,36 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	ssm "github.com/aws/aws-secretsmanager-caching-go/secretcache"
 	openai "github.com/sashabaranov/go-openai"
 )
+
+var (
+	secretcache, ssm_err = ssm.New()
+)
+
+func getSecret() (string, error) {
+	if ssm_err != nil {
+		return "", fmt.Errorf("failed to get SSM cache: %v", ssm_err)
+	}
+
+	secret, err := secretcache.GetSecretString(os.Getenv("OPENAPI_SECRET_NAME"))
+	if err != nil {
+		return "", fmt.Errorf("failed to get secret from SSM cache: %v", err)
+	}
+
+	return secret, nil
+}
 
 var headers = map[string]string{
 	"Access-Control-Allow-Origin": "*",
 	"Content-Type":                "application/json",
 }
-
-var client = openai.NewClient(os.Getenv("OPENAPI_KEY"))
 
 type Conversation struct {
 	ID          string `json:"id"`
@@ -25,7 +42,17 @@ type Conversation struct {
 }
 
 func HandleRequest(conversation []Conversation) (events.APIGatewayProxyResponse, error) {
+	api_key, err := getSecret()
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return events.APIGatewayProxyResponse{Headers: headers, StatusCode: 500, Body: "Failed get OpenAPI credentials"}, nil
+	}
+
+	log.Print(api_key)
+
+	var client = openai.NewClient(api_key)
 	var chatCompletion []openai.ChatCompletionMessage
+
 	for _, c := range conversation {
 
 		if c.Participant == "user" {

@@ -4,16 +4,17 @@ import Navbar from './components/Navbar';
 import Chat from './components/Chat';
 
 function App() {
+
+  const conversationContext = React.createContext([])
+
   return (
-    <div className="flex flex-row bg-primary">
+    <div className="h-screen flex bg-primary">
       <div className="basis-1/6">
         <Navbar></Navbar>
       </div>
-      <div className='basis-1/6'></div>
-      <div className="basis-2/3">
+      <div className="basis-5/6">
         <Chat></Chat>
       </div>
-      <div className='basis-1/6'></div>
     </div>
   );
 }

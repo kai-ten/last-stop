@@ -6,8 +6,6 @@ resource "aws_secretsmanager_secret" "circulate_openapi_key" {
 resource "aws_secretsmanager_secret_version" "circulate_openapi_key_version" {
   secret_id     = aws_secretsmanager_secret.circulate_openapi_key.id
   secret_string = <<EOF
-   {
-    "OPENAPI_KEY": ""
-   }
+""
 EOF
 }

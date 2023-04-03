@@ -8,12 +8,12 @@ module "audit_log_lambda" {
 
 data "aws_iam_policy_document" "audit_log_lambda_policy" {
   statement {
-    effect = "Allow"
     actions = [
-      "none:null"
+      "dynamodb:PutItem"
     ]
+    effect   = "Allow"
     resources = [
-      "*"
+      aws_dynamodb_table.last_stop_audit_log.arn
     ]
   }
 }

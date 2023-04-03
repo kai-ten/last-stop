@@ -57,10 +57,9 @@ EOF
 
 module "step_function" {
   source = "terraform-aws-modules/step-functions/aws"
-
   name       = var.name
   definition = local.definition_template
-
+  type = "EXPRESS"
   create_role = true
 
   service_integrations = {
@@ -83,6 +82,4 @@ module "step_function" {
       events = true
     }
   }
-
-  type = "STANDARD"
 }
