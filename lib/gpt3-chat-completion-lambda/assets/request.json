@@ -1,0 +1,8 @@
+[
+    {
+        "id": "test-uuid",
+        "participant": "user",
+        "message": "Hello",
+        "timestamp": 1
+    }
+]

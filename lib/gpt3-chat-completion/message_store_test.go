@@ -12,31 +12,31 @@ import (
 	"github.com/google/uuid"
 )
 
-type mockDynamoDBClient struct {
+type MockDynamoDBClient struct {
 	dynamodbiface.DynamoDBAPI
 	err error
 }
 
-func (m *mockDynamoDBClient) PutItem(input *dynamodb.PutItemInput) (*dynamodb.PutItemOutput, error) {
-	if m.err != nil {
-		return nil, m.err
+func (client *MockDynamoDBClient) PutItem(input *dynamodb.PutItemInput) (*dynamodb.PutItemOutput, error) {
+	if client.err != nil {
+		return nil, client.err
 	}
 	return &dynamodb.PutItemOutput{}, nil
 }
 
-func TestStoreConversationAuditLog(t *testing.T) {
-	conv := Conversation{
+func TestSaveMessage(t *testing.T) {
+	conv := Message{
 		Participant: "user",
 		Message:     "Hello!",
 	}
 
 	t.Run("Successful store", func(t *testing.T) {
-		mockSvc := &mockDynamoDBClient{}
-		lastMessage, err := storeConversationWithClient(conv, mockSvc)
+		ddb := &MockDynamoDBClient{}
+		lastMessage, err := SaveMessageWithClient(conv, ddb)
 		if err != nil {
 			t.Errorf("Expected no error, got %v", err)
 		}
-		if lastMessage == (Conversation{}) {
+		if lastMessage == (Message{}) {
 			t.Error("Expected a valid ID, got an empty string")
 		}
 		if lastMessage.ID.String() == "" {
@@ -47,31 +47,31 @@ func TestStoreConversationAuditLog(t *testing.T) {
 	})
 
 	t.Run("Failed store", func(t *testing.T) {
-		mockSvc := &mockDynamoDBClient{err: errors.New("put item error")}
-		_, err := storeConversationWithClient(conv, mockSvc)
+		ddb := &MockDynamoDBClient{err: errors.New("put item error")}
+		_, err := SaveMessageWithClient(conv, ddb)
 		if err == nil {
 			t.Error("Expected an error, got nil")
 		}
 	})
 }
 
-func storeConversationWithClient(conversation Conversation, svc dynamodbiface.DynamoDBAPI) (Conversation, error) {
-	conversation.Timestamp = time.Now().Unix()
-	conversation.ID = uuid.New()
+func SaveMessageWithClient(message Message, ddb dynamodbiface.DynamoDBAPI) (Message, error) {
+	message.Timestamp = time.Now().Unix()
+	message.ID = uuid.New()
 
-	av, err := dynamodbattribute.MarshalMap(conversation)
+	msg_map, err := dynamodbattribute.MarshalMap(message)
 	if err != nil {
-		return Conversation{}, err
+		return Message{}, err
 	}
 
 	input := &dynamodb.PutItemInput{
-		Item:      av,
+		Item:      msg_map,
 		TableName: aws.String("LastStopAuditLog"),
 	}
 
-	_, err = svc.PutItem(input)
+	_, err = ddb.PutItem(input)
 	if err != nil {
-		return Conversation{}, err
+		return Message{}, err
 	}
-	return conversation, nil
+	return message, nil
 }
