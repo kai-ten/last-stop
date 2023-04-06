@@ -1,48 +1,70 @@
-import React, { useState, useEffect, useRef, SyntheticEvent } from "react";
+import React, { useState, useEffect } from "react";
 
 interface Message {
-  participant: "user" | "assistant";
-  message: string;
+  participant?: "user" | "assistant";
+  message?: string;
+  timestamp?: number;
+  conversationId?: string;
+}
+
+interface Conversation {
+  id?: string;
+  messages?: Message[];
+  userId?: string;
 }
 
 function Chat() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  // const [messages, setMessages] = useState<Message[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([{id: "", messages: [], userId: ""}]);
+  const [conversation, setConversation] = useState<Conversation>({id: "", messages: [], userId: ""});
   const [input, setInput] = useState("");
-  const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8080/2015-03-31/functions/function/invocations";
 
-  const sendMessage = (message: Message) => {
-    const response = fetch(API_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      mode: "cors",
-      body: JSON.stringify(messages)
-    })
-    .then(response => {
-      response.json().then(data => {
-        // Set the assistant's response message
-        setMessages((msgs) => [...msgs, 
-          { 
-            participant: "assistant",
-            message: data.body 
-          }
-        ]);
-      })
-      .catch(err => {
-        console.log(err);
-      })
-    })
-    .catch(err => {
-      console.log(err)
-    })
+  const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8081/chatgpt3cc";
+
+  const sendMessage = async (message: Message) => {
+    try {
+      const response = await fetch(`${API_ENDPOINT}/gpt3cc`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        mode: "cors",
+        body: JSON.stringify(message)
+      });
+
+      const msg = (await response.json()).body as Message
+      const currentConvoIdx = conversations.findIndex(c => c.id = msg.conversationId)
+      // conversations[currentConvoIdx].messages.push(msg)
+      setConversations((convs) => [...convs])
+    }
+    catch(e) {
+      console.log("" + e)
+    }
   };
+
+  const startConversation = async () => {
+    try {
+      const response = await fetch(`${API_ENDPOINT}/conversation`, {
+        method: "GET",
+        mode: "cors"
+      });
+
+      const conv = (await response.json()).body as Conversation
+      setConversations((convs) => [...convs, conv])
+    }
+    catch(e) {
+      console.log("" + e)
+    }
+  }
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
 
+    let message: Message = { message: input, participant: "user" }
+    
     if (!input.trim()) return;
-    setMessages((prev) => [...prev, { participant: "user", message: input }]);
+    // setMessages((prev) => [...prev, { participant: "user", message: input }]);
+    setConversations(())
     setInput("");
   };
 
@@ -51,27 +73,29 @@ function Chat() {
 
     if (e.code === 'Enter') {
       if (!input.trim()) return;
-      setMessages((prev) => [...prev, { participant: "user", message: input }]);
+      // setMessages((prev) => [...prev, { participant: "user", message: input }]);
       setInput("");
     }
   };
 
-  useEffect(() => {
-    if (messages.length === 0) {
-      return;
-    }
-    
-    const lastMessage = messages[messages.length - 1];
-    if (lastMessage.participant === "user") {
-      sendMessage(lastMessage);
-    }
-  }, [messages]);
+  // useEffect(() => {
+  //   if (conversations.length() === 0) {
+  //     return;
+  //   } else {
 
+  //   }
+    
+  //   const lastMessage = conversations[0]?.messages[conversations[0]?.messages?.length - 1];
+  //   if (lastMessage.participant === "user") {
+  //     sendMessage(lastMessage);
+  //   }
+  // }, [conversations[0]?.messages]);
+//           {/* {messages.map((message, index) => ( */}
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex h-full flex-col overflow-y-scroll">
         <div className="p-1 px-16">
-          {messages.map((message, index) => (
+        {conversations[0]?.messages?.map((message, index) => (
             // message cards
             <div
               key={index}

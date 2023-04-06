@@ -1,0 +1,65 @@
+version: "3.4"
+services:
+  dynamodb-local:
+    container_name: dynamodb-local
+    image: amazon/dynamodb-local:latest
+    ports:
+      - "8000:8000"
+    # volumes:
+    #   - "./docker/dynamodb:/home/dynamodblocal/data"
+    # command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"    
+
+  # audit-log:
+  #   build: ./audit-log/
+  #   ports:
+  #     - "8082:8082"
+  #   depends_on:
+  #     - dynamodb
+  #   links:
+  #     - "dynamodb"
+  #   environment:
+  #     - AWS_ACCESS_KEY_ID: 'HERESMYKEY'
+  #     - AWS_SECRET_ACCESS_KEY: 'HERESMYOTHERKEY'
+  #     - REGION: 'us-east-2'
+
+  gpt3-chat-completion:
+    container_name: gpt3-chat-completion
+    build: ./gpt3-chat-completion/
+    ports:
+      - "8081:8081"
+    depends_on:
+      - dynamodb-local
+    links:
+      - dynamodb-local
+    environment:
+      - OPENAI_APIKEY=
+      - AWS_ACCESS_KEY_ID=HERESMYKEY
+      - AWS_SECRET_ACCESS_KEY=HERESMYOTHERKEY
+      - REGION=us-east-2
+      - CONVERSATION_TABLE=conversations
+      - MESSAGE_TABLE=messages
+      - ENDPOINT=http://dynamodb-local:8000
+
+  last-stop-ui:
+    container_name: last-stop-ui
+    build: 
+      context: ./last-stop/
+      target: dev
+      args:
+        - REACT_APP_API_ENDPOINT=http://gpt3-chat-completion:8081
+    depends_on:
+      - gpt3-chat-completion
+    links:
+      - gpt3-chat-completion
+    ports:
+      - "8080:80"
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - REACT_APP_API_ENDPOINT=http://gpt3-chat-completion:8081
+    volumes:
+       - ./last-stop:/app
+       - /app/node_modules
+      
