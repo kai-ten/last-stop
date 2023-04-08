@@ -39,7 +39,7 @@ func TestSaveMessage(t *testing.T) {
 		if lastMessage == (Message{}) {
 			t.Error("Expected a valid ID, got an empty string")
 		}
-		if lastMessage.ID.String() == "" {
+		if lastMessage.ID == "" {
 			t.Error("Expected a non-empty ID, got an empty string")
 		} else {
 			t.Log("Success - ID matches")
@@ -57,7 +57,7 @@ func TestSaveMessage(t *testing.T) {
 
 func SaveMessageWithClient(message Message, ddb dynamodbiface.DynamoDBAPI) (Message, error) {
 	message.Timestamp = time.Now().Unix()
-	message.ID = uuid.New()
+	message.ID = uuid.NewString()
 
 	msg_map, err := dynamodbattribute.MarshalMap(message)
 	if err != nil {

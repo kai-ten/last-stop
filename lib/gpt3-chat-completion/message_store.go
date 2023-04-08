@@ -41,26 +41,21 @@ func CreateTable(ddb *dynamodb.DynamoDB, tableName string) error {
 }
 
 func TableExist(ddb *dynamodb.DynamoDB, tableName string) bool {
-	// create input parameter
 	input := &dynamodb.DescribeTableInput{
 		TableName: aws.String(tableName),
 	}
 
-	// call the DescribeTable API
-	result, err := ddb.DescribeTable(input)
+	_, err := ddb.DescribeTable(input)
 
-	// check for errors
 	if err != nil {
-		log.Println("Table does not exist")
 		return false
 	} else {
-		log.Println("Table exists")
-		log.Println(result)
 		return true
 	}
 }
 
 func GetDBSession() (*dynamodb.DynamoDB, error) {
+	// TODO: dont use static credentials configured here, provider ~/.aws/credentials and session will automatically pull from there
 	sess, err := session.NewSession(&aws.Config{
 		Endpoint:    aws.String(os.Getenv("ENDPOINT")),
 		Region:      aws.String(os.Getenv("REGION")),
@@ -72,19 +67,10 @@ func GetDBSession() (*dynamodb.DynamoDB, error) {
 	return dynamodb.New(sess), nil
 }
 
-func CreateConversation(userId string) (Conversation, error) {
-	ddb, err := GetDBSession()
-	if err != nil {
-		return Conversation{}, err
-	}
-	tableExist := TableExist(ddb, os.Getenv("CONVERSATION_TABLE"))
-	if !tableExist {
-		CreateTable(ddb, os.Getenv("CONVERSATION_TABLE"))
-	}
-
+func CreateConversation() (Conversation, error) {
 	conv := Conversation{
-		ID:     uuid.New().String(),
-		UserId: userId,
+		ID:     uuid.NewString(),
+		UserId: uuid.NewString(),
 	}
 
 	conv_map, err := dynamodbattribute.MarshalMap(conv)
@@ -96,29 +82,19 @@ func CreateConversation(userId string) (Conversation, error) {
 
 	input := &dynamodb.PutItemInput{
 		Item:      conv_map,
-		TableName: aws.String("conversations"),
+		TableName: aws.String(os.Getenv("CONVERSATION_TABLE")),
 	}
 
-	stored, err := ddb.PutItem(input)
+	_, err = ddb.PutItem(input)
 	if err != nil {
 		log.Printf("Error failed to store conversation: %v", err)
 		return Conversation{}, err
 	}
-	log.Printf("Stored: %v", stored)
+	log.Printf("CreatedConversation: %v", conv)
 	return conv, nil
 }
 
 func GetConversation(conversationId string) (Conversation, error) {
-	ddb, err := GetDBSession()
-	if err != nil {
-		return Conversation{}, err
-	}
-
-	tableExist := TableExist(ddb, os.Getenv("CONVERSATIO_TABLE"))
-	if !tableExist {
-		CreateTable(ddb, os.Getenv("CONVERSATION_TABLE"))
-	}
-
 	input := &dynamodb.GetItemInput{
 		TableName: aws.String(os.Getenv("CONVERSATION_TABLE")),
 		Key: map[string]*dynamodb.AttributeValue{
@@ -139,24 +115,11 @@ func GetConversation(conversationId string) (Conversation, error) {
 		log.Fatalf("Failed to unmarshal item: %v", err)
 	}
 
-	for range conversation.Messages {
-		log.Printf("ConvId: %v - Message: %v", conversation.ID, conversation.Messages)
-	}
-
+	log.Printf("GetConversation: %v", conversation)
 	return conversation, nil
 }
 
 func SaveMessage(message Message) (Message, error) {
-	ddb, err := GetDBSession()
-	if err != nil {
-		return Message{}, err
-	}
-
-	tableExist := TableExist(ddb, os.Getenv("MESSAGE_TABLE"))
-	if !tableExist {
-		CreateTable(ddb, os.Getenv("MESSAGE_TABLE"))
-	}
-
 	message.Timestamp = time.Now().Unix()
 	message.ID = uuid.New().String()
 
@@ -179,16 +142,6 @@ func SaveMessage(message Message) (Message, error) {
 }
 
 func UpdateConversationMessages(conversation Conversation, message Message) (Conversation, error) {
-	ddb, err := GetDBSession()
-	if err != nil {
-		return Conversation{}, err
-	}
-
-	tableExist := TableExist(ddb, os.Getenv("CONVERSATION_TABLE"))
-	if !tableExist {
-		CreateTable(ddb, os.Getenv("CONVERSATION"))
-	}
-
 	input := &dynamodb.UpdateItemInput{
 		TableName: aws.String(os.Getenv("CONVERSATION_TABLE")),
 		Key: map[string]*dynamodb.AttributeValue{
@@ -242,6 +195,6 @@ func UpdateConversationMessages(conversation Conversation, message Message) (Con
 		log.Printf("Failed to unmarshal response model: %v", err)
 		return Conversation{}, err
 	}
-
+	
 	return conversation, nil
 }
