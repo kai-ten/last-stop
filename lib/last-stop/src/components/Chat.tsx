@@ -1,114 +1,62 @@
 import React, { useState, useEffect } from "react";
-import { useConversationDispatch, useConversationState } from "../contexts/ConversationContext";
 import { Message } from "../models/Message";
-import { newConversation, newUserMessage, newAssistantMessage } from "../services/ConversationAPI";
+import { useNewConversationMutation, useNewUserMessageMutation, useNewAssistantMessageMutation } from "../services/ConversationAPI";
+import ConversationList from "./ConversationList";
 import { Conversation } from "../models/Conversation";
 
 
 function Chat() {
 
-  const conversationDispatch = useConversationDispatch();
-  const state = useConversationState();
+  const [newConversation, conversation] = useNewConversationMutation();
+  const [newUserMessage, userMessage] = useNewUserMessageMutation();
+  const [newAssistantMessage, assistantMessage] = useNewAssistantMessageMutation();
+  
   const [input, setInput] = useState("");
+
+  const [conv, setConversation] = useState<Conversation>({id: "", messages: [], userId: ""});
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
 
-    // let message: Message = { message: input, participant: "user" }
     if (!input) return;
     sendMessage({ message: input.trim() })
     setInput("");
   };
 
   const handleEnterSubmit = (e: React.KeyboardEvent) => {
-    e.preventDefault();
-
     if (e.code === 'Enter') {
+      e.preventDefault();
       if (!input) return;
       sendMessage({ message: input.trim() })
       setInput("");
     }
   };
 
-  const handleDispatch = async (msg: Message) => {
-
-    msg.conversationId = state.currentConversation.id
-    console.log("In handle dispatch");
-    console.log(state.currentConversation.messages)
-
-    console.log(msg)
-
-    conversationDispatch({
-      type: "updateConversation",
-      payload: {
-        id: state.currentConversation.id,
-        messages: [...state.currentConversation.messages, msg],
-        userId: state.currentConversation.userId
-      } as Conversation
-    })
-  }
-
   const sendMessage = async (msg: Message) => {
-    if (!state.currentConversation?.id) {
-      console.log("Sending message: (no currentConversation): ")
-
-      let conv: Conversation = await newConversation(msg);
-      conversationDispatch({
-        type: "newConversation",
-        payload: conv
-      });
-
-      msg.conversationId = conv.id
-      let userMsg: Message = await newUserMessage(msg);
-      conversationDispatch({
-        type: "updateConversation",
-        payload: {
-          id: conv.id,
-          messages: [userMsg],
-          userId: conv.userId
-        } as Conversation
-      });
-
-      let assistantMsg: Message = await newAssistantMessage(msg);
-      conversationDispatch({
-        type: "updateConversation",
-        payload: {
-          id: conv.id,
-          messages: [assistantMsg],
-          userId: conv.userId
-        } as Conversation
-      });
-
+    console.log(msg)
+    if (!conv?.id) {
+      let conversation: Conversation = await newConversation({id: "", messages: [], userId: ""}).unwrap()
+      msg.conversationId = conversation.id
+      conversation = await newUserMessage(msg).unwrap();
+      setConversation(conversation)
+      setTimeout(() => {}, 1000);
+      conversation = await newAssistantMessage(msg).unwrap();
+      setConversation(conversation)
     } else {
-      // console.log("sendMessage: We have an existing coversation")
-      // msg.conversationId = state.currentConversation.id
-      // let userMsg: Message = await newUserMessage(msg);
-      // conversationDispatch({
-      //   type: "updateConversation",
-      //   payload: {
-      //     id: state.currentConversation.id,
-      //     messages: [userMsg],
-      //     userId: state.currentConversation.userId
-      //   } as Conversation
-      // });
-
-      // let assistantMsg: Message = await newAssistantMessage(msg);
-      // conversationDispatch({
-      //   type: "updateConversation",
-      //   payload: {
-      //     id: state.currentConversation.id,
-      //     messages: [assistantMsg],
-      //     userId: state.currentConversation.userId
-      //   } as Conversation
-      // });
+      msg.conversationId = conv.id;
+      let s = await newUserMessage(msg).unwrap();
+      setConversation(s)
+      setTimeout(() => {}, 1000);
+      s = await newAssistantMessage(msg).unwrap();
+      setConversation(s)
     }
   }
-  
+
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex h-full flex-col overflow-y-scroll">
         <div className="p-1 px-16">
-        {state.currentConversation?.messages?.map((message, index) => (
+        {conv?.messages?.map((message, index) => (
             // Message cards
             <div
               key={index}
@@ -128,7 +76,7 @@ function Chat() {
       <div className="w-full">
         <form
           onSubmit={handleSubmit}
-          onKeyUp={handleEnterSubmit}
+          onKeyPress={handleEnterSubmit}
           className="stretch flex flex-row gap-3 justify-center p-4 bg-gray-300 border-3"
         >
           <textarea

@@ -59,7 +59,22 @@ Have more questions? Reach out to us in some of the following places:
 
 <br />
 
-## How to deploy for the first time
+## How to deploy as a Cluster for the first time (Containerized - ALPHA)
+
+1. In order to deploy for the first time you must have the following dependencies:
+    - [An API Key for ChatGPT](https://platform.openai.com/overview) (yes, having this is better than employees signing in on their behalf)
+        - If you want us to retrieve and manage the API Key on your behalf, let us know! 
+    - Docker ([Rancher](https://rancherdesktop.io/) or [Docker Desktop](https://docs.docker.com/desktop/))
+    - docker-compose
+
+1. Add your OpenAI API Key to the docker-compose.yml file, after the = sign `OPENAI_APIKEY=` 
+1. Run `docker-compose up --build` to spin up the environment 
+1. Navigate to localhost:8080 to begin using the UI
+
+
+<br />
+
+## How to deploy for the first time (Cloud Serverless)
 
 1. In order to deploy for the first time you must have the following dependencies:
     - [An API Key for ChatGPT](https://platform.openai.com/overview) (yes, having this is better than employees signing in on their behalf)

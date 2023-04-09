@@ -18,8 +18,8 @@ func setupRoutes(app *fiber.App) {
 
 	chatgpt3cc := v1.Group("/chatgpt3cc")
 	chatgpt3cc.Post("/conversation", ValidateConversation, NewConversation)
-	chatgpt3cc.Post("/user-message", ValidateMessage, NewUserMessage)
-	chatgpt3cc.Post("/assistant-message", ValidateMessage, NewAssistantMessage)
+	chatgpt3cc.Patch("/user-message", ValidateMessage, NewUserMessage)
+	chatgpt3cc.Patch("/assistant-message", ValidateMessage, NewAssistantMessage)
 }
 
 func initDB() {

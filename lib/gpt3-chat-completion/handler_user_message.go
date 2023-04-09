@@ -13,7 +13,6 @@ type IError struct {
 }
 
 func NewUserMessage(c *fiber.Ctx) error {
-
 	log.Print(string(c.Body()))
 	var message Message
 	err := json.Unmarshal(c.Body(), &message)
@@ -38,5 +37,5 @@ func NewUserMessage(c *fiber.Ctx) error {
 		return fiber.NewError(500, "Failed to update Conversation")
 	}
 
-	return c.Status(200).JSON(message)
+	return c.Status(200).JSON(conv)
 }

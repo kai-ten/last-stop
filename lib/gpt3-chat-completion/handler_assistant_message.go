@@ -12,6 +12,7 @@ func NewAssistantMessage(c *fiber.Ctx) error {
 	var message Message
 	err := json.Unmarshal(c.Body(), &message)
 	if err := validate.Struct(message); err != nil {
+		log.Print(message)
 		c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 	if err != nil {
@@ -19,13 +20,21 @@ func NewAssistantMessage(c *fiber.Ctx) error {
 		return fiber.NewError(500, "Error unmarshaling JSON")
 	}
 
+	log.Printf("Assistant: %v", message)
+
 	conv, err := GetConversation(message.ConversationId)
 	if err != nil {
 		log.Printf("Failed to get Conversation from database: %v", err)
 		return fiber.NewError(500, "Failed to get conversation from database")
 	}
 
-	log.Printf("WPOWOW: %v", conv.Messages)
+	if len(conv.Messages) == 0 {
+		conv, err = GetConversation(message.ConversationId)
+		if err != nil {
+			log.Printf("Failed to get Conversation from database: %v", err)
+			return fiber.NewError(500, "Failed to get conversation from database")
+		}
+	}
 
 	gptMessage, err := GetChatGPTCompletionResponse(conv.Messages)
 	if err != nil {
@@ -41,5 +50,5 @@ func NewAssistantMessage(c *fiber.Ctx) error {
 		return fiber.NewError(500, "Failed to update conversation")
 	}
 
-	return c.Status(200).JSON(message)
+	return c.Status(200).JSON(conv)
 }

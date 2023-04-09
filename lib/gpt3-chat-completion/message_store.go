@@ -102,6 +102,7 @@ func GetConversation(conversationId string) (Conversation, error) {
 				S: aws.String(conversationId),
 			},
 		},
+		ConsistentRead: aws.Bool(true),
 	}
 
 	result, err := ddb.GetItem(input)
@@ -115,9 +116,33 @@ func GetConversation(conversationId string) (Conversation, error) {
 		log.Fatalf("Failed to unmarshal item: %v", err)
 	}
 
+	// if conversation.Messages == nil {
+	// 	conv, err := retryGetConv(3, 2, GetConversation, conversationId)
+	// 	if err != nil {
+	// 		return Conversation{}, err
+	// 	}
+	// 	return conv, nil
+	// }
+
 	log.Printf("GetConversation: %v", conversation)
 	return conversation, nil
 }
+
+// func retryGetConv(attempts int, sleep time.Duration, f func(string) (Conversation, error), convId string) (conv Conversation, err error) {
+//     for i := 0; i < attempts; i++ {
+//         if i > 0 {
+//             log.Println("retrying after error:", err)
+//             time.Sleep(time.Duration(sleep.Seconds()))
+//             sleep *= 2
+//         }
+//         msg, err := f(convId)
+//         if err == nil {
+//             return msg, nil
+//         }
+//     }
+//     return Conversation{}, err
+// }
+
 
 func SaveMessage(message Message) (Message, error) {
 	message.Timestamp = time.Now().Unix()
@@ -195,6 +220,6 @@ func UpdateConversationMessages(conversation Conversation, message Message) (Con
 		log.Printf("Failed to unmarshal response model: %v", err)
 		return Conversation{}, err
 	}
-	
+
 	return conversation, nil
 }

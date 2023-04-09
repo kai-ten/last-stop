@@ -6,6 +6,7 @@ export interface Conversation {
     userId: string;
 }
 
+
 export interface ConversationState {
     currentConversation: Conversation,
     allConversations: Conversation[]
