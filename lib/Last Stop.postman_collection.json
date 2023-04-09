@@ -1,0 +1,50 @@
+{
+	"info": {
+		"_postman_id": "922cb848-89fd-4808-af43-d204430292b7",
+		"name": "Last Stop",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Local",
+			"item": [
+				{
+					"name": "SendMessage",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"participant\":\"user\",\r\n    \"message\":\"hi\",\r\n    \"conversationId\": \"0be12167-acfd-448f-91ab-d534ba4a677a\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/chatgpt3cc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"chatgpt3cc"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Conversation",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

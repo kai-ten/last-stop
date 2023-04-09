@@ -1,78 +1,63 @@
-import React, { useState, useEffect, useRef, SyntheticEvent } from "react";
+import React, { useState, useEffect } from "react";
+import { Message } from "../models/Message";
+import { useNewConversationMutation, useNewUserMessageMutation, useNewAssistantMessageMutation } from "../services/ConversationAPI";
+import ConversationList from "./ConversationList";
+import { Conversation } from "../models/Conversation";
 
-interface Message {
-  participant: "user" | "assistant";
-  message: string;
-}
 
 function Chat() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
-  const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8080/2015-03-31/functions/function/invocations";
 
-  const sendMessage = (message: Message) => {
-    const response = fetch(API_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      mode: "cors",
-      body: JSON.stringify(messages)
-    })
-    .then(response => {
-      response.json().then(data => {
-        // Set the assistant's response message
-        setMessages((msgs) => [...msgs, 
-          { 
-            participant: "assistant",
-            message: data.body 
-          }
-        ]);
-      })
-      .catch(err => {
-        console.log(err);
-      })
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  };
+  const [newConversation, conversation] = useNewConversationMutation();
+  const [newUserMessage, userMessage] = useNewUserMessageMutation();
+  const [newAssistantMessage, assistantMessage] = useNewAssistantMessageMutation();
+  
+  const [input, setInput] = useState("");
+
+  const [conv, setConversation] = useState<Conversation>({id: "", messages: [], userId: ""});
 
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
 
-    if (!input.trim()) return;
-    setMessages((prev) => [...prev, { participant: "user", message: input }]);
+    if (!input) return;
+    sendMessage({ message: input.trim() })
     setInput("");
   };
 
   const handleEnterSubmit = (e: React.KeyboardEvent) => {
-    e.preventDefault();
-
     if (e.code === 'Enter') {
-      if (!input.trim()) return;
-      setMessages((prev) => [...prev, { participant: "user", message: input }]);
+      e.preventDefault();
+      if (!input) return;
+      sendMessage({ message: input.trim() })
       setInput("");
     }
   };
 
-  useEffect(() => {
-    if (messages.length === 0) {
-      return;
+  const sendMessage = async (msg: Message) => {
+    console.log(msg)
+    if (!conv?.id) {
+      let conversation: Conversation = await newConversation({id: "", messages: [], userId: ""}).unwrap()
+      msg.conversationId = conversation.id
+      conversation = await newUserMessage(msg).unwrap();
+      setConversation(conversation)
+      setTimeout(() => {}, 1000);
+      conversation = await newAssistantMessage(msg).unwrap();
+      setConversation(conversation)
+    } else {
+      msg.conversationId = conv.id;
+      let s = await newUserMessage(msg).unwrap();
+      setConversation(s)
+      setTimeout(() => {}, 1000);
+      s = await newAssistantMessage(msg).unwrap();
+      setConversation(s)
     }
-    
-    const lastMessage = messages[messages.length - 1];
-    if (lastMessage.participant === "user") {
-      sendMessage(lastMessage);
-    }
-  }, [messages]);
+  }
 
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex h-full flex-col overflow-y-scroll">
         <div className="p-1 px-16">
-          {messages.map((message, index) => (
-            // message cards
+        {conv?.messages?.map((message, index) => (
+            // Message cards
             <div
               key={index}
               className={`w-full my-4
@@ -82,7 +67,7 @@ function Chat() {
                   : "bg-gray-300 text-gray-900 self-start"
               }`}
             >
-              <div className="whitespace-pre-wrap">{message.message}</div>
+              <div key={index} className="whitespace-pre-wrap">{message.message}</div>
             </div>
           ))}
           <div className="w-full h-20 flex-shrink-0"></div>
@@ -91,7 +76,7 @@ function Chat() {
       <div className="w-full">
         <form
           onSubmit={handleSubmit}
-          onKeyUp={handleEnterSubmit}
+          onKeyPress={handleEnterSubmit}
           className="stretch flex flex-row gap-3 justify-center p-4 bg-gray-300 border-3"
         >
           <textarea

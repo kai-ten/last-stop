@@ -1,12 +1,36 @@
 # Last Stop 
 
-Last Stop is the final place your prompt resides before sending your data to the black box. Last Stop is a DLP solution that mitigates data loss before prompts get sent to Large Language Models (LLMs) like OpenAI's ChatGPT, Google's Bard (coming soon), and more. Last Stop also allows you gain insights into the use-cases that your organization is sending to LLMs, so that you can increase the experiences of using these tools as an organization. 
+Welcome to the Last Stop for all of your LLM usage
 
-With each prompt, the data being monitored is checked for code, PII, sensitive organization data, and whatever else you'd like to define as a flag or key metric. Any findings in the data can result in blocking the message, can result in sanitizing the data prior to being submitted, or can result in being stored to a Vector database to build a company corpus. Once the data has been validated and cleaned (if necessary), the request will be forwarded to the LLM.
+## Last Stop benefits the individual and the organization
 
 <br />
 
-__The best part? This is intended to run entirely in your own cloud!__
+- __Cheaper usage of ChatGPT__ (individuals & organizations benefit!)
+    - Why pay $20 a month when you can pay per service request, host it yourself!
+- __Data Loss Prevention__ (DLP)
+    - Organizations benefit from maintaining their own instance of ChatGPT on their servers
+    - Allow your employees to access ChatGPT without bringing their own accounts
+    - Monitor for potential DLP (emails, names, code, etc), sanitize the requests, block the requests, or anything in between
+- __Build a company corpus__
+    - A corpus is a collection of data, such as the prompts and the responses
+    - Share prompts among the team so nobody has to search the same thing twice!
+    - Provides better results and quicker results, as well as faster knowledge shares
+- __Gain insights__ into common prompts and train your employees based on the commonalities
+- __API Security__
+    - ChatGPT has heightened security for their APIs that includes an "Opt-in" selection for your data to be shared. [Don't be the product, use the APIs!](https://help.openai.com/en/articles/7039943-data-usage-for-consumer-services-faq)!
+
+ <br />
+
+__The best benefit of all? This is intended to run entirely in your own network or on your own device!__
+
+<br />
+
+## Our mission
+
+<br />
+
+Last Stop's mission is to provide accessibility and security to the individual and to the organization. Second to that is providing a quality experience with all LLMs in one location - query one or query them all (as more APIs are released of course).
 
 <br />
 
@@ -14,16 +38,43 @@ __The best part? This is intended to run entirely in your own cloud!__
 
 <br />
 
-Make the most of these LLMs by leveraging them all in one application all while staying safe from DLP. After all, it is estimated that [11% of data that employees paste in ChatGPT contains sensitive data](https://www.csoonline.com/article/3691115/sharing-sensitive-business-data-with-chatgpt-could-be-risky.html).
+## Why we started this
+
+<br />
+
+Countries and organizations are banning ChatGPT altogether, but we believe that there is a happy medium. New innovation should not be stifled but encouraged safely, and that's exactly what we're here to do.
+
+Don't be like these examples:
+
+- [11% of data that employees paste in ChatGPT contains sensitive data](https://www.csoonline.com/article/3691115/sharing-sensitive-business-data-with-chatgpt-could-be-risky.html)
+- [Samsung Proprietary Information Leak](https://mashable.com/article/samsung-chatgpt-leak-details)
+
+<br />
 
 Have more questions? Reach out to us in some of the following places:
+- [Join our Discord](https://discord.gg/J8S4SYBqsq)
 - [Circulate - Contact Us](https://www.circulate.dev/contact)
 - [Kai Herrera](https://www.linkedin.com/in/kai-herrera/)
 - [Dustin Buschman](https://www.linkedin.com/in/dbuschman/)
 
 <br />
 
-## How to deploy for the first time
+## How to deploy as a Cluster for the first time (Containerized - ALPHA)
+
+1. In order to deploy for the first time you must have the following dependencies:
+    - [An API Key for ChatGPT](https://platform.openai.com/overview) (yes, having this is better than employees signing in on their behalf)
+        - If you want us to retrieve and manage the API Key on your behalf, let us know! 
+    - Docker ([Rancher](https://rancherdesktop.io/) or [Docker Desktop](https://docs.docker.com/desktop/))
+    - docker-compose
+
+1. Add your OpenAI API Key to the docker-compose.yml file, after the = sign `OPENAI_APIKEY=` 
+1. Run `docker-compose up --build` to spin up the environment 
+1. Navigate to localhost:8080 to begin using the UI
+
+
+<br />
+
+## How to deploy for the first time (Cloud Serverless)
 
 1. In order to deploy for the first time you must have the following dependencies:
     - [An API Key for ChatGPT](https://platform.openai.com/overview) (yes, having this is better than employees signing in on their behalf)
