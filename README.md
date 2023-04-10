@@ -68,8 +68,8 @@ Have more questions? Reach out to us in some of the following places:
         - If you want us to retrieve and manage the API Key on your behalf, let us know! 
     - Docker ([Rancher](https://rancherdesktop.io/) or [Docker Desktop](https://docs.docker.com/desktop/))
 
-1. Add your OpenAI API Key to the docker-compose.yml file, after the = sign `OPENAI_APIKEY=` 
-1. Run `docker compose up --build` to spin up the environment 
+1. Add your OpenAI API Key to the lib/docker-compose.yml file, at `OPENAI_APIKEY=` 
+1. In /lib, run `docker compose up --build` to spin up the environment 
 1. Navigate to localhost:8080 to begin using the UI
 
 <br />
