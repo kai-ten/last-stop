@@ -1,15 +1,18 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"os"
+
 	"github.com/go-playground/validator/v10"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-var ddb *dynamodb.DynamoDB
+var pool *pgxpool.Pool
 var validate = validator.New()
 
 func setupRoutes(app *fiber.App) {
@@ -18,40 +21,28 @@ func setupRoutes(app *fiber.App) {
 
 	chatgpt3cc := v1.Group("/chatgpt3cc")
 	chatgpt3cc.Post("/conversation", ValidateConversation, NewConversation)
+	chatgpt3cc.Get("/messages/:conversation_id", ValidateMessage, MessagesByConversationID)
 	chatgpt3cc.Patch("/user-message", ValidateMessage, NewUserMessage)
 	chatgpt3cc.Patch("/assistant-message", ValidateMessage, NewAssistantMessage)
 }
 
-func initDB() {
-	client, err := GetDBSession()
+func postgresInit() {
+	dsn := fmt.Sprintf("postgres://%s:%s@%s/circulate", os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_HOST"))
+	var err error
+	pool, err = pgxpool.New(context.Background(), dsn)
 	if err != nil {
-		log.Fatalf("Failed to start dynamodb session")
-	}
-	ddb = client
-	convTableExist := TableExist(ddb, os.Getenv("CONVERSATION_TABLE"))
-	if !convTableExist {
-		err = CreateTable(ddb, os.Getenv("CONVERSATION_TABLE"))
-		if err != nil {
-			log.Fatalf("Failed to create conversation table")
-		}
-	}
-	msgTableExist := TableExist(ddb, os.Getenv("MESSAGE_TABLE"))
-	if !msgTableExist {
-		err = CreateTable(ddb, os.Getenv("MESSAGE_TABLE"))
-		if err != nil {
-			log.Fatalf("Failed to create message table")
-		}
+		log.Printf("Unable to connect to database: %v\n", err)
+		os.Exit(1)
 	}
 }
 
 func main() {
+	postgresInit()
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
 		AllowHeaders: "Content-Type, Authorization",
 	}))
 	setupRoutes(app)
-
-	initDB()
 
 	log.Fatal(app.Listen(":8081"))
 }

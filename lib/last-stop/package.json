@@ -15,7 +15,6 @@
     "@types/node": "^16.18.22",
     "@types/react": "^18.0.31",
     "@types/react-dom": "^18.0.11",
-    "@types/redux": "^3.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5",

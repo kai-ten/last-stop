@@ -1,27 +1,16 @@
 version: "3.4"
 services:
-  dynamodb-local:
-    container_name: dynamodb-local
-    image: amazon/dynamodb-local:latest
+  db:
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     ports:
-      - "8000:8000"
-    # volumes:
-    #   - "./docker/dynamodb:/home/dynamodblocal/data"
-    # command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
-    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"    
-
-  # audit-log:
-  #   build: ./audit-log/
-  #   ports:
-  #     - "8082:8082"
-  #   depends_on:
-  #     - dynamodb
-  #   links:
-  #     - "dynamodb"
-  #   environment:
-  #     - AWS_ACCESS_KEY_ID: 'HERESMYKEY'
-  #     - AWS_SECRET_ACCESS_KEY: 'HERESMYOTHERKEY'
-  #     - REGION: 'us-east-2'
+      - '5432:5432'
+    volumes: 
+      # - db:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/initialize.sql
 
   gpt3-chat-completion:
     container_name: gpt3-chat-completion
@@ -29,24 +18,23 @@ services:
     ports:
       - "8081:8081"
     depends_on:
-      - dynamodb-local
+      - db
     links:
-      - dynamodb-local
+      - db
     environment:
       - OPENAI_APIKEY=
-      - AWS_ACCESS_KEY_ID=HERESMYKEY
-      - AWS_SECRET_ACCESS_KEY=HERESMYOTHERKEY
-      - REGION=us-east-2
-      - CONVERSATION_TABLE=conversations
-      - MESSAGE_TABLE=messages
-      - ENDPOINT=http://dynamodb-local:8000
       - REQUEST_ORIGINS=http://last-stop-ui:3000
+      - NODE_ENV=production
+      - DB_HOST=db:5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=circulate
 
   last-stop-ui:
     container_name: last-stop-ui
     build: 
       context: ./last-stop/
-      target: dev
+      target: prod
       args:
         - REACT_APP_API_ENDPOINT=http://localhost:8081
     depends_on:
@@ -63,4 +51,8 @@ services:
     volumes:
        - ./last-stop:/app
        - /app/node_modules
+
+# volumes:
+#   db:
+#     driver: local
       

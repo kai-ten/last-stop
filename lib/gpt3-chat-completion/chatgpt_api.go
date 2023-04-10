@@ -3,9 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
-	"time"
 
 	openai "github.com/sashabaranov/go-openai"
 )
@@ -35,6 +33,10 @@ func createChatGPTCompletionMessage(messages []Message) ([]openai.ChatCompletion
 
 func GetChatGPTCompletionResponse(messages []Message) (Message, error) {
 	messageReq, err := createChatGPTCompletionMessage(messages)
+	if err != nil {
+		fmt.Printf("ChatCompletion Message error: %v\n", err)
+		return Message{}, err
+	}
 
 	resp, err := client.CreateChatCompletion(
 		context.Background(),
@@ -45,15 +47,8 @@ func GetChatGPTCompletionResponse(messages []Message) (Message, error) {
 		},
 	)
 	if err != nil {
-		// fmt.Printf("ChatCompletion error: %v\n", err)
-		// return Message{}, err
-		gptMessage, err := retry(5, 2, GetChatGPTCompletionResponse, messages)
-		if err != nil {
-			fmt.Printf("ChatCompletion error: %v\n", err)
-			return Message{}, err
-		}
-
-		return gptMessage, nil
+		fmt.Printf("ChatCompletion error: %v\n", err)
+		return Message{}, err
 	}
 
 	gptMessage := Message{
@@ -62,19 +57,4 @@ func GetChatGPTCompletionResponse(messages []Message) (Message, error) {
 	}
 
 	return gptMessage, nil
-}
-
-func retry(attempts int, sleep time.Duration, f func(messages []Message) (Message, error), messages []Message) (message Message, err error) {
-    for i := 0; i < attempts; i++ {
-        if i > 0 {
-            log.Println("retrying after error:", err)
-            time.Sleep(time.Duration(sleep.Seconds()))
-            sleep *= 2
-        }
-        msg, err := f(messages)
-        if err == nil {
-            return msg, nil
-        }
-    }
-    return Message{}, err
 }

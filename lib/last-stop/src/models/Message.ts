@@ -1,7 +1,8 @@
 export interface Message {
     id?: string;
     participant?: "user" | "assistant";
-    message: string;
-    timestamp?: number;
-    conversationId?: string;
+    chat_message?: string;
+    conversation_id?: string;
+    created_at?: Date;
+    updated_at?: Date;
 }
