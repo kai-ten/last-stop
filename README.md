@@ -61,7 +61,7 @@ Have more questions? Reach out to us in some of the following places:
 
 <br />
 
-## How to deploy on your local machine (Containerized - ALPHA)
+## How to deploy on your local machine
 
 <br />
 
@@ -72,6 +72,14 @@ Have more questions? Reach out to us in some of the following places:
 1. Add your OpenAI API Key to the lib/docker-compose.yml file, at `OPENAI_APIKEY=` 
 1. In /lib, run `docker compose up --build` to spin up the environment 
 1. Navigate to localhost:8080 to begin using the UI
+
+<br />
+
+## How to deploy to the cloud
+
+<br />
+
+Coming soon - starting with AWS. If you would like to see more cloud configurations just let us know.
 
 <br />
 
