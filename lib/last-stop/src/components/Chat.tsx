@@ -3,6 +3,8 @@ import { Message } from "../models/Message";
 import { useNewConversationMutation, useNewUserMessageMutation, useNewAssistantMessageMutation } from "../services/ConversationAPI";
 import ConversationList from "./ConversationList";
 import { Conversation } from "../models/Conversation";
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from "remark-gfm";
 
 
 function Chat() {
@@ -84,7 +86,9 @@ function Chat() {
                   : "bg-gray-300 text-gray-900 self-start"
               }`}
             >
-              <div key={index} className="whitespace-pre-wrap">{message.chat_message}</div>
+              <div key={index} className="whitespace-pre-wrap prose lg:prose-lg">
+                <ReactMarkdown children={message?.chat_message || ""} remarkPlugins={[remarkGfm]} />
+              </div>
             </div>
           ))}
           <div className="w-full h-20 flex-shrink-0"></div>

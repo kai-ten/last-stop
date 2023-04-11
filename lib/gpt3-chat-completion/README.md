@@ -30,5 +30,6 @@ The GPT-3 Chat Completion Prompt Service is a lambda that handles the request fr
 
 <br />
 
-## Roadmap:
+## General Information:
 
+- [Models can be found here](https://pkg.go.dev/github.com/sashabaranov/go-openai@v1.5.7#pkg-constants)
