@@ -5,6 +5,8 @@ import ConversationList from "./ConversationList";
 import { Conversation } from "../models/Conversation";
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from "remark-gfm";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFaceSmile, faRobot } from "@fortawesome/free-solid-svg-icons";
 
 
 function Chat() {
@@ -86,7 +88,13 @@ function Chat() {
                   : "bg-gray-300 text-gray-900 self-start"
               }`}
             >
-              <div key={index} className="whitespace-pre-wrap prose lg:prose-lg">
+              {message.participant === "user" &&
+                <FontAwesomeIcon icon={faFaceSmile} />
+              }
+              {message.participant === "assistant" &&
+                <FontAwesomeIcon icon={faRobot} />
+              }
+              <div key={index} className="mx-auto whitespace-pre-wrap prose lg:prose-lg">
                 <ReactMarkdown children={message?.chat_message || ""} remarkPlugins={[remarkGfm]} />
               </div>
             </div>

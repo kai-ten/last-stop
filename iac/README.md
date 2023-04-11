@@ -1,5 +1,7 @@
 # Deploying the Infrastructure
 
+# This is under construction.
+
 The infrastructure is intended to be a single command deployment. 
 Use terraform workspaces, if you don't create a new workspace it will deploy to "default"
 
@@ -14,38 +16,4 @@ Use terraform workspaces, if you don't create a new workspace it will deploy to 
 <br />
 
 ## Steps for your first deployment
-
-1. Deploy the infastructure.
-
-    ```
-    make init
-    ```
-
-    This will:
-    - Create a remote backend in the environment you are signed into in your CLI
-    - Deploy a project using the "default" Terraform Workspace. Feel free to change this workspace depending on how you manage your AWS environments
-    - Create a new VPC (see terraform.tfvars to use an existing VPC)
-
-1. Go to Secrets Manager, select "/last-stop-default/openapi/api_key", and store your OpenAPI API Key
-
-1. Submit a prompt! 
-
-<br />
-
-## Steps for updates & maintenance
-
-To plan any changes to your infrastructure.
-
-```
-make plan
-```
-
-To deploy the changes you made. Note that -auto-approve is set, so if you would rather review your deployment one more time then go to the Makefile and remove that line.
-
-```
-make apply
-```
-
-
-
 
